@@ -31,11 +31,12 @@ const ICONE_PERFIL = (
 export default function Titulo() {
   const [aberto, setAberto] = useState(false)
   const { cliente, deslogaCliente } = useClienteStore()
-  const { qtdItens } = useCarrinhoStore()
+  const { qtdItens, limparCarrinho } = useCarrinhoStore()
   const navigate = useNavigate()
 
   function handleLogout() {
     deslogaCliente()
+    limparCarrinho()
     localStorage.removeItem("clienteKey")
     navigate("/")
   }
@@ -105,6 +106,15 @@ export default function Titulo() {
 
               {cliente.id ? (
                 <div className="flex items-center gap-3">
+                  <Link
+                    to="/itens-pedido"
+                    title="Meus Pedidos"
+                    className="text-yellow-300/90 hover:text-yellow-100 transition-colors hover:[filter:drop-shadow(0_0_8px_rgba(255,215,0,0.9))]"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </Link>
                   <span className="hidden sm:block text-sm font-medium text-yellow-200 truncate max-w-[120px]">
                     {cliente.nome}
                   </span>
@@ -171,6 +181,15 @@ export default function Titulo() {
                     <span className="block py-2.5 text-sm font-medium text-yellow-300">
                       Olá, {cliente.nome}
                     </span>
+                  </li>
+                  <li>
+                    <Link
+                      to="/itens-pedido"
+                      onClick={() => setAberto(false)}
+                      className="block py-2.5 text-sm font-medium tracking-wider uppercase text-yellow-100 hover:text-yellow-50 hover:pl-2 transition-all"
+                    >
+                      Meus Pedidos
+                    </Link>
                   </li>
                   <li>
                     <button

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { useCarrinhoStore } from "./context/CarrinhoContext"
 import { useClienteStore } from "./context/ClienteContext"
+import { CapaLivro } from "./components/CapaLivro"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -155,8 +156,8 @@ export default function Carrinho() {
                                 "
                             >
                                 {/* Capa */}
-                                <img
-                                    src={item.livro.capa ?? ""}
+                                <CapaLivro
+                                    src={item.livro.capa}
                                     alt={`Capa de ${item.livro.titulo}`}
                                     className="w-20 h-28 object-cover rounded-xl shrink-0"
                                 />

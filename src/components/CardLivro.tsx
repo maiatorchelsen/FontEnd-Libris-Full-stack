@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { toast } from "sonner"
 import type { LivroType } from "../utils/LivroType"
 import { useCarrinhoStore } from "../context/CarrinhoContext"
+import { CapaLivro } from "./CapaLivro"
 
 export function CardLivro({ data }: { data: LivroType }) {
     const { adicionarItem } = useCarrinhoStore()
@@ -60,8 +61,8 @@ export function CardLivro({ data }: { data: LivroType }) {
                 "
             >
 
-                <img
-                    src={data.capa ?? ""}
+                <CapaLivro
+                    src={data.capa}
                     alt={`Capa de ${data.titulo}`}
                     className="
                         h-full

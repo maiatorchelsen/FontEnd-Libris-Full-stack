@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useCarrinhoStore } from "./context/CarrinhoContext"
+import { CapaLivro } from "./components/CapaLivro"
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -40,8 +41,7 @@ export default function Detalhes() {
         {/* Brilho de fundo */}
         <div className="absolute inset-0 -inset-x-10 -inset-y-10 bg-[radial-gradient(ellipse,rgba(212,175,90,0.35)_0%,rgba(180,140,50,0.15)_45%,transparent_70%)] blur-xl pointer-events-none" />
         <section className="relative flex mt-12 mx-auto flex-col items-center bg-black/70 border border-yellow-700/30 rounded-lg shadow-lg shadow-yellow-900/20 backdrop-blur md:flex-row md:max-w-5xl">
-        <img className="object-cover w-full rounded-t-lg h-96 md:h-2/4 md:w-2/4 md:rounded-none md:rounded-s-lg"
-          src={livro?.capa ?? ""} alt={`Capa de ${livro?.titulo}`} />
+        <CapaLivro className="object-cover w-full rounded-t-lg h-96 md:h-2/4 md:w-2/4 md:rounded-none md:rounded-s-lg" src={livro?.capa} alt={`Capa de ${livro?.titulo}`} />
         <div className="flex flex-col justify-between p-4 leading-normal">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-yellow-100">
             {livro?.titulo}

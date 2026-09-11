@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useClienteStore } from "../context/ClienteContext";
 import { toast } from "sonner";
+import { CapaLivro } from "./CapaLivro";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -126,8 +127,8 @@ export function Oraculo() {
 
                         <p className="text-purple-200/60 mb-10 max-w-xl">
                             {cliente.id
-                                ? `Olá, ${cliente.nome}! Deixe a IA escolher livros perfeitos para o seu gosto.`
-                                : "Faça login para que a IA encontre livros sob medida para você."
+                                ? `Olá, ${cliente.nome}! Deixe a CristalIA escolher livros perfeitos para o seu gosto.`
+                                : "Faça login para que a CristalIA encontre livros sob medida para você."
                             }
                         </p>
 
@@ -214,8 +215,8 @@ export function Oraculo() {
                                         flex-col
                                     "
                                 >
-                                    <img
-                                        src={livro.capa ?? ""}
+                                    <CapaLivro
+                                        src={livro.capa}
                                         alt={`Capa de ${livro.titulo}`}
                                         className="w-full h-44 object-contain bg-gradient-to-b from-[#241238] to-[#12091B] p-3"
                                     />

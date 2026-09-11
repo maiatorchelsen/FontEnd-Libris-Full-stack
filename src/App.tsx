@@ -260,7 +260,7 @@ export default function App() {
             ✦ Libris Arcana —  Histórias que encantam ✦
           </p>
           <a href="/admin/login" className="text-purple-200/20 text-[10px] hover:text-purple-200/40 transition-colors mt-2 inline-block">
-            Acesso Admin
+            Acesso Administrativo
           </a>
         </div>
 
