@@ -1,20 +1,27 @@
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { useState } from "react"
 
-type Inputs = {
-    nome: string
-    email: string
-    tel: string
-    senha: string
-    confirmaSenha: string
-    rua: string
-    numero: string
-    bairro: string
-    cidade: string
-    cep: string
-}
+const cadastroSchema = z.object({
+    nome: z.string().min(5, "Nome deve ter mais de 4 caracteres"),
+    email: z.string().email("Email inválido"),
+    tel: z.string().refine(val => val === "" || /^\d{9}$/.test(val), "Telefone deve ter exatamente 9 dígitos"),
+    senha: z.string().min(5, "Senha deve ter no mínimo 5 caracteres"),
+    confirmaSenha: z.string(),
+    rua: z.string().optional(),
+    numero: z.string().optional(),
+    bairro: z.string().optional(),
+    cidade: z.string().optional(),
+    cep: z.string().optional(),
+}).refine(data => data.senha === data.confirmaSenha, {
+    message: "As senhas não conferem",
+    path: ["confirmaSenha"],
+})
+
+type Inputs = z.infer<typeof cadastroSchema>
 
 const generos = [
     "Fantasia",
@@ -47,13 +54,13 @@ const rowClass = "grid grid-cols-2 gap-4"
 const apiUrl = import.meta.env.VITE_API_URL
 
 export default function Cadastro() {
-    const { register, handleSubmit, watch } = useForm<Inputs>()
+    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+        resolver: zodResolver(cadastroSchema),
+    })
     const navigate = useNavigate()
     const [favoritos, setFavoritos] = useState<string[]>([])
     const [mostraSenha, setMostraSenha] = useState(false)
     const [mostraConfirma, setMostraConfirma] = useState(false)
-
-    const senha = watch("senha")
 
     function toggleGenero(genero: string) {
         setFavoritos(prev =>
@@ -62,11 +69,6 @@ export default function Cadastro() {
     }
 
     async function cadastraCliente(data: Inputs) {
-        if (data.senha !== data.confirmaSenha) {
-            toast.error("As senhas não conferem!")
-            return
-        }
-
         const body = {
             nome: data.nome,
             email: data.email,
@@ -114,25 +116,31 @@ export default function Cadastro() {
                                 <div className="space-y-4">
                                     <div>
                                         <label htmlFor="nome" className={labelClass}>Nome completo</label>
-                                        <input type="text" id="nome" placeholder="Seu nome" className={inputClass} required
+                                        <input type="text" id="nome" placeholder="Seu nome"
+                                               className={inputClass + (errors.nome ? " border-red-400" : "")}
                                                {...register("nome")} />
+                                        {errors.nome && <p className="text-red-400 text-xs mt-1">{errors.nome.message}</p>}
                                     </div>
                                     <div>
                                         <label htmlFor="email" className={labelClass}>E-mail</label>
-                                        <input type="email" id="email" placeholder="seu@email.com" className={inputClass} required
+                                        <input type="email" id="email" placeholder="seu@email.com"
+                                               className={inputClass + (errors.email ? " border-red-400" : "")}
                                                {...register("email")} />
+                                        {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
                                     </div>
                                     <div>
                                         <label htmlFor="tel" className={labelClass}>Telefone</label>
-                                        <input type="tel" id="tel" placeholder="(11) 99999-9999" className={inputClass}
+                                        <input type="tel" id="tel" placeholder="999999999"
+                                               className={inputClass + (errors.tel ? " border-red-400" : "")}
                                                {...register("tel")} />
+                                        {errors.tel && <p className="text-red-400 text-xs mt-1">{errors.tel.message}</p>}
                                     </div>
                                     <div className={rowClass}>
                                         <div>
                                             <label htmlFor="senha" className={labelClass}>Senha</label>
                                             <div className="relative">
                                                 <input type={mostraSenha ? "text" : "password"} id="senha" placeholder="••••••••"
-                                                       className={inputClass + " pr-10"} required
+                                                       className={inputClass + " pr-10" + (errors.senha ? " border-red-400" : "")}
                                                        {...register("senha")} />
                                                 <button type="button" onClick={() => setMostraSenha(!mostraSenha)}
                                                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-purple-300/50 hover:text-purple-200 transition-colors"
@@ -149,15 +157,14 @@ export default function Cadastro() {
                                                     )}
                                                 </button>
                                             </div>
+                                            {errors.senha && <p className="text-red-400 text-xs mt-1">{errors.senha.message}</p>}
                                         </div>
                                         <div>
                                             <label htmlFor="confirmaSenha" className={labelClass}>Confirmar senha</label>
                                             <div className="relative">
                                                 <input type={mostraConfirma ? "text" : "password"} id="confirmaSenha" placeholder="••••••••"
-                                                       className={inputClass + " pr-10"} required
-                                                       {...register("confirmaSenha", {
-                                                           validate: value => value === senha || "As senhas não conferem"
-                                                       })} />
+                                                       className={inputClass + " pr-10" + (errors.confirmaSenha ? " border-red-400" : "")}
+                                                       {...register("confirmaSenha")} />
                                                 <button type="button" onClick={() => setMostraConfirma(!mostraConfirma)}
                                                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-purple-300/50 hover:text-purple-200 transition-colors"
                                                         tabIndex={-1}>
@@ -173,6 +180,7 @@ export default function Cadastro() {
                                                     )}
                                                 </button>
                                             </div>
+                                            {errors.confirmaSenha && <p className="text-red-400 text-xs mt-1">{errors.confirmaSenha.message}</p>}
                                         </div>
                                     </div>
                                 </div>
@@ -206,7 +214,7 @@ export default function Cadastro() {
                                     <div className={rowClass}>
                                         <div>
                                             <label htmlFor="cidade" className={labelClass}>Cidade</label>
-                                            <input type="text" id="cidade" placeholder="São Paulo" className={inputClass}
+                                            <input type="text" id="cidade" placeholder="Pelotas" className={inputClass}
                                                    {...register("cidade")} />
                                         </div>
                                         <div>

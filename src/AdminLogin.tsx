@@ -1,18 +1,24 @@
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { useState } from "react"
 import { useAdminStore } from "./context/AdminContext"
 
-type Inputs = {
-    email: string
-    senha: string
-}
+const adminLoginSchema = z.object({
+    email: z.string().email("Email inválido"),
+    senha: z.string().min(5, "Senha deve ter no mínimo 5 caracteres"),
+})
+
+type Inputs = z.infer<typeof adminLoginSchema>
 
 const apiUrl = import.meta.env.VITE_API_URL
 
 export default function AdminLogin() {
-    const { register, handleSubmit } = useForm<Inputs>()
+    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+        resolver: zodResolver(adminLoginSchema),
+    })
     const { logaAdmin } = useAdminStore()
     const [mostraSenha, setMostraSenha] = useState(false)
     const navigate = useNavigate()
@@ -57,9 +63,9 @@ export default function AdminLogin() {
                                     E-mail
                                 </label>
                                 <input type="email" id="email" placeholder="admin@email.com"
-                                       className="bg-[#0a0014]/60 border border-purple-400/30 text-[#F5EBDD] rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 block w-full p-2.5 placeholder-purple-300/40 transition-all"
-                                       required
+                                       className={"bg-[#0a0014]/60 border border-purple-400/30 text-[#F5EBDD] rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 block w-full p-2.5 placeholder-purple-300/40 transition-all" + (errors.email ? " border-red-400" : "")}
                                        {...register("email")} />
+                                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
                             </div>
                             <div>
                                 <label htmlFor="senha" className="block mb-2 text-sm font-medium text-[#F5EBDD]">
@@ -67,9 +73,9 @@ export default function AdminLogin() {
                                 </label>
                                 <div className="relative">
                                     <input type={mostraSenha ? "text" : "password"} id="senha" placeholder="••••••••"
-                                           className="bg-[#0a0014]/60 border border-purple-400/30 text-[#F5EBDD] rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 block w-full p-2.5 pr-10 placeholder-purple-300/40 transition-all"
-                                           required
+                                           className={"bg-[#0a0014]/60 border border-purple-400/30 text-[#F5EBDD] rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 block w-full p-2.5 pr-10 placeholder-purple-300/40 transition-all" + (errors.senha ? " border-red-400" : "")}
                                            {...register("senha")} />
+                                    {errors.senha && <p className="text-red-400 text-xs mt-1">{errors.senha.message}</p>}
                                     <button type="button" onClick={() => setMostraSenha(!mostraSenha)}
                                             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-purple-300/50 hover:text-purple-200 transition-colors"
                                             tabIndex={-1}>
