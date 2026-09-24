@@ -133,18 +133,18 @@ export default function Admin() {
 
     async function alterarStatus(id: number, status: string) {
         if (!admin) return
-        const res = await fetch(`${apiUrl}/pedidos/${id}`, {
+        const res = await fetch(`${apiUrl}/administrador/pedidos/${id}`, {
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${admin.token}` },
             method: "PUT",
             body: JSON.stringify({ status })
         })
-        if (res.ok) {
-            toast.success(`Status alterado para ${status}`)
-            carregaDados()
-        } else {
-            const d = await res.json()
-            toast.error(d.erro || "Erro ao alterar status")
+        if (!res.ok) {
+            const d = await res.json().catch(() => null)
+            toast.error(d?.erro || `Erro ao alterar status (${res.status})`)
+            return
         }
+        toast.success(`Status alterado para ${status}`)
+        carregaDados()
     }
 
     async function excluirPedido(id: number) {
